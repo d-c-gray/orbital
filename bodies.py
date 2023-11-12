@@ -43,8 +43,10 @@ class MassiveSphericalCelestial(Body):
             return self.ephemeris[t]
 
 
-class Craft(Body):
-    def __init__(self, massive:bool = False):
+class PointMassCraft(Body):
+    def __init__(self, 
+                 m: float,
+                 massive:bool = False):
         Body.__init__(self,ephemeral = False,massive = massive,)
         self.m = _np.array([],dtype = float)
         self.t = _np.array([],dtype = float)

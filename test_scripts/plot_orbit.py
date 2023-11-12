@@ -13,21 +13,21 @@ from orbital import ephemeris as ephem,plot as plt,time , planets
 
 
 
-ephem.open_jplephem('de421', ephem.de421)
+ephem.open_jplkernel('de421', ephem.de421)
 
 t0 = time.datetime(2023,1,1).to_TBD()
 tend = t0 + 30
 times = np.linspace(t0, tend, 1000)
 
-earth = ephem.Ephemeris.from_jplephem('de421',(0, 3))
+earth = ephem.Ephemeris.from_jpl('de421',(0, 3))
 
-sun = ephem.Ephemeris.from_jplephem('de421',(0, 10))
+sun = ephem.Ephemeris.from_jpl('de421',(0, 10))
 
-mars = ephem.Ephemeris.from_jplephem('de421',(0, 4))
+mars = ephem.Ephemeris.from_jpl('de421',(0, 4))
 
-moon_earthbary = ephem.Ephemeris.from_jplephem('de421',(3, 301))
+moon_earthbary = ephem.Ephemeris.from_jpl('de421',(3, 301))
 
-earth_earthbary = ephem.Ephemeris.from_jplephem('de421',(3, 399))
+earth_earthbary = ephem.Ephemeris.from_jpl('de421',(3, 399))
 
 moon = earth+moon_earthbary
 

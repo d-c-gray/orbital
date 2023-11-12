@@ -5,7 +5,7 @@ Created on Sat Nov 11 20:36:20 2023
 @author: coleg
 """
 
-from orbital import ephemeris,Ephemeris, planets, satellites, plot, time
+from orbital import ephemeris,Ephemeris, planets, satellites, plot, time, bodies, mission
 import numpy as np
 import sys
 sys.path.append(r'C:/code')
@@ -53,4 +53,10 @@ t0 = time.datetime(2025, 6, 29, hour=12).to_TBD()
 satellites.Moon.set_ephemeris(earth2moon)
 planets.Earth.set_ephemeris(Ephemeris.as_origin())
 
+vehicle = bodies.PointMassCraft(150, massive = False)
 
+leg1 = mission.Leg(t0,vehicle,[planets.Earth,satellites.Moon])
+
+leg1.compute(
+    
+    )

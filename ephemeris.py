@@ -47,6 +47,7 @@ class Ephemeris():
         """
         self.kernel = fun
         
+        
 
     @classmethod
     def as_origin(cls):
@@ -80,6 +81,14 @@ class Ephemeris():
         obj = cls.__new__(cls)
         cls.__init__(obj,get)
         return obj
+
+    @classmethod
+    def from_numpy(
+            t,
+            p,
+            v
+            ):
+        pass
 
     def __getitem__(self,t):
         return self.kernel(t)
