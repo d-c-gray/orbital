@@ -12,7 +12,7 @@ de421 =  _join(_ephempath,'de421.bsp')
 
 jplkernels = {}
 
-def open_jplephem(
+def open_jplkernel(
     name:str,
     file:str,
     ):
@@ -31,23 +31,42 @@ def close_jplkernel(name:str):
 
 class Ephemeris():
 
-    def __init__(self,
-                 position,
-                 velocity,
-                 timestamps,
-                 ):
-        self.p = position
-        self.v = velocity
-        self.t = timestamps
+    def __init__(self,fun):
+        """
+        Create an Ephemeris object.
+        
+        Ephemeris objects take in a time index (float or array) and return
+        a tuple of position and velocity objects.
 
+        Parameters
+        ----------
+        fun : obj
+            The kernel function that takes in a time and returns the position
+            and velocity of the object.
 
+        """
+        self.kernel = fun
+        
 
     @classmethod
-    def from_jplephem(
+    def as_origin(cls):
+        def fun(t):
+            if type(t) is _np.ndarray and len(t) > 1:
+                return _np.zeros((len(t)),3,float),_np.zeros((len(t)),3,float)
+            else:
+                return _np.zeros((3,),float),_np.zeros((3,),float)
+            
+        obj = cls.__new__(cls)
+        cls.__init__(obj,fun)
+        return obj
+
+    @classmethod
+    def from_jpl(
             cls,
             kernel_name: str,
             index: tuple[int],
-            times: _np.ndarray,
+            p_const: float = 1,
+            v_const:float =  1
             ):
         try:
             kernel = jplkernels[kernel_name]
@@ -55,34 +74,41 @@ class Ephemeris():
             raise Exception(' Must open_jplephem(name) first')
 
         seg = kernel[index[0],index[1]]
-        pos,vel = seg.compute_and_differentiate(times)
+        def get(times):
+            pos,vel = seg.compute_and_differentiate(times)
+            return pos*p_const,vel*v_const
         obj = cls.__new__(cls)
-        cls.__init__(
-            obj,
-            pos,
-            vel,
-            times
-            )
+        cls.__init__(obj,get)
         return obj
 
+    def __getitem__(self,t):
+        return self.kernel(t)
+
     def __add__(self,o):
-        p = self.p+o.p
-        t = self.t
-        v = self.v + o.v
-        return Ephemeris(p,v,t)
+        def get(t):
+            p1,v1 = self[t]
+            p2,v2 = o[t]
+            return p1-p2,v1-v2
+        
+        return Ephemeris(get)
 
     def __sub__(self,o):
-        p = self.p - o.p
-        t = self.t
-        v = self.v - o.v
-        return Ephemeris(p,v,t)
+        def get(t):
+            p1,v1 = self[t]
+            p2,v2 = o[t]
+            return p1-p2,v1-v2
+        
+        return Ephemeris(get)
 
 
 if __name__ == "__main__":
-    open_jplephem('de421', r'ephemerides/de421.bsp')
+    open_jplkernel('de421', r'ephemerides/de421.bsp')
 
-    earth = Ephemeris.from_jplephem(
-        'de421',
-        (0,3),
-        2425854,
-        )
+    earth = Ephemeris.from_jpl('de421',(0,3))
+    mars = Ephemeris.from_jpl('de421',(0,4))
+
+    p1,v1 = earth[2460000]
+    p2,v2 = mars[2460000]
+    e2m = mars-earth
+    p2m,v2m = e2m[2460000]
+    print(p2m- (p2-p1))

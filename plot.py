@@ -7,7 +7,7 @@ Created on Fri Nov 10 17:25:19 2023
 
 from matplotlib.pyplot import *
 
-def orbits(
+def orbits(t,
         bodies: dict,
         ax=None,
         **plt_kwargs
@@ -16,9 +16,10 @@ def orbits(
         fig, ax = subplots(subplot_kw=dict(projection='3d'))
 
     for n,b in bodies.items():
-        ax.plot(b.p[0, :],
-                b.p[1, :],
-                b.p[2, :],
+        p,v = b[t]
+        ax.plot(p[0, :],
+                p[1, :],
+                p[2, :],
                 label=n,
                 **plt_kwargs)
 

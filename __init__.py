@@ -6,4 +6,5 @@ Created on Fri Nov 10 20:50:17 2023
 """
 
 from .time import *
-from .physical import planets
+from .ephemeris import Ephemeris
+from .bodies import planets,satellites
